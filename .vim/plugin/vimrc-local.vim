@@ -1,5 +1,5 @@
-"" Load .vimrc.local if it exists
-if filereadable('.vimrc.local')
-    source .vimrc.local
-    echom "vimrc.local read"
+"" Load local .vimrc if it exists
+if filereadable('.vimrc')
+    source .vimrc
+    echom "local .vimrc loaded"
 endif
