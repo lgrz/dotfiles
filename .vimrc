@@ -223,8 +223,7 @@ endfunction
 nnoremap <c-g> :call SelectaIdentifier()<cr>
 
 :command! InsDate .!date '+\%d/\%m/\%y'
-:command! InsDateUTC .!date '+\%Y-\%m-\%d'
-:command! InsDateStampUTC .!date '+\%Y-\%m-\%d \%T'
+:command! InsDateStampUTC .!date -u '+\%Y-\%m-\%d \%T'
 
 " :silent vert botright help quickfix
 " :silent vert botright help cscope
