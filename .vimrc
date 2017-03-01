@@ -14,6 +14,9 @@ set backspace=indent,eol,start
 set cmdheight=2
 "set colorcolumn=80
 
+" ignore case when completing file names and direcorties
+set wildignorecase
+
 " Enable matchit plugin
 source $VIMRUNTIME/macros/matchit.vim
 " Enable man.vim plugin
@@ -111,8 +114,9 @@ augroup vimrcFileSettings
     autocmd BufRead,BufNewFile *.rs set filetype=rust
     " java
     autocmd FileType java setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-    "autocmd BufRead,BufNewFile *.hpp set filetype=cpp
+    " cxx
     autocmd FileType cpp setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+    autocmd BufRead,BufNewFile *.hpp set filetype=cpp
     " twig
     autocmd BufRead,BufNewFile *.twig set filetype=html
     " jing
@@ -217,6 +221,10 @@ function! SelectaIdentifier()
   call SelectaCommand("find * -type f", "-s " . @z, ":e")
 endfunction
 nnoremap <c-g> :call SelectaIdentifier()<cr>
+
+:command! InsDate .!date '+\%d/\%m/\%y'
+:command! InsDateUTC .!date '+\%Y-\%m-\%d'
+:command! InsDateStampUTC .!date '+\%Y-\%m-\%d \%T'
 
 " :silent vert botright help quickfix
 " :silent vert botright help cscope
