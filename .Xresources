@@ -1,0 +1,15 @@
+xterm*font: terminus-14
+xterm*faceName: Monaco:antialias=true
+xterm*faceSize: 10
+xterm*termName: xterm-256color
+xterm*locale: true
+xterm*metaSendsEscape: true
+xterm*saveLines: 8192
+xterm*rightScrollBar: true
+xterm*scrollBar: true
+xterm*reverseVideo: off
+xterm*foreground: rgb:a8/a8/a8
+xterm*background: rgb:00/00/00
+xterm*VT100.Translations: #override \
+                 Ctrl Shift <Key>v: insert-selection(CLIPBOARD) \n\
+                 Ctrl Shift <Key>c: copy-selection(CLIPBOARD)

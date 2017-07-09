@@ -38,6 +38,11 @@ export PS1='\h:\W\[\033[32m\]$(__git_ps1) \[\033[0m\]$ '
 # python path
 export PATH=/usr/local/share/python:$PATH
 
+# virtualenvwrapper
+# export WORKON_HOME=$HOME/.virtualenvs
+# export PROJECT_HOME=$HOME/src
+# source /usr/local/bin/virtualenvwrapper.sh
+
 # gem path
 export GEM_HOME="$HOME/.gem"
 export PATH="$HOME/.gem/bin:$PATH"
