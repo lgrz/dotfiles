@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -xe
 
 # key repeat rate [delay, repeat/second]
 xset r rate 200 100
@@ -14,5 +14,7 @@ do
 	sleep 15
 done &
 xterm &
-xrandr --output LVDS1 --auto --output HDMI1 --auto --right-of LVDS1
+output=$(xrandr | awk 'NR > 2 && $2 ~ /^connected/ { print $1 }')
+xrandr --output LVDS1 --auto --output ${output:-"HDMI1"} --auto --right-of LVDS1
+xautolock -time 10 -locker slock &
 exec dwm
