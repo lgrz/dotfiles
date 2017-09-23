@@ -8,7 +8,7 @@ set nocompatible
 set ruler
 set nowrap
 set clipboard=unnamed
-set history=1000
+set history=10000
 set showcmd
 set backspace=indent,eol,start
 set cmdheight=2
