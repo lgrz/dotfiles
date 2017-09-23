@@ -121,6 +121,8 @@ augroup vimrcFileSettings
     autocmd BufRead,BufNewFile *.twig set filetype=html
     " jing
     autocmd BufRead,BufNewFile *.jing set filetype=jing
+    " R
+    autocmd FileType r setlocal keywordprg=Rscript\ -e\ \'?<cword>\'
 augroup END
 
 ""
