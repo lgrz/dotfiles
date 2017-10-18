@@ -123,6 +123,8 @@ augroup vimrcFileSettings
     autocmd BufRead,BufNewFile *.jing set filetype=jing
     " R
     autocmd FileType r setlocal keywordprg=Rscript\ -e\ \'?<cword>\'
+    " tex, bib
+    autocmd FileType tex,bib map <buffer> <leader>g :!mupdf $HOME/bibdex/files/<cword>.pdf &<cr>
 augroup END
 
 ""
