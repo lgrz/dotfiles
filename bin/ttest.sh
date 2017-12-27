@@ -24,7 +24,7 @@ fi
 paste -d' ' $1 $2 | cut -d' ' -f 1,2,4 > tt
 
 echo "
-inp <- scan('tt', list('',0,0))
+inp <- scan('tt', list('',0,0), quiet=T)
 sysA <- inp[[2]]
 sysB <- inp[[3]]
 x <- t.test(sysA,sysB,var.equal=TRUE,paired=TRUE,alternative='t')
