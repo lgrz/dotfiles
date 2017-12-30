@@ -1,0 +1,18 @@
+
+if [ -z "$PATH_DEFAULT" ]; then
+    export PATH_DEFAULT=$PATH
+fi
+
+if [ ! -z "$PYTHONPATH" ]; then
+    unset PYTHONPATH
+fi
+
+if [ -z "$1" ]; then
+    echo "anaconda3 enabled"
+    # added by Anaconda3 installer
+    export PATH="$HOME/.local/anaconda3/bin:$PATH"
+elif [ "py2" = "$1" ]; then
+    echo "anaconda2 enabled"
+    # added by Anaconda2 installer
+    export PATH="$HOME/.local/anaconda2/bin:$PATH"
+fi
