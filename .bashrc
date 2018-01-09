@@ -35,9 +35,6 @@ source /usr/local/etc/bash_completion.d/git-prompt.sh
 # git prompt
 export PS1='\h:\W\[\033[32m\]$(__git_ps1) \[\033[0m\]$ '
 
-# python path
-export PATH=/usr/local/share/python:$PATH
-
 # virtualenvwrapper
 # export WORKON_HOME=$HOME/.virtualenvs
 # export PROJECT_HOME=$HOME/src
@@ -50,18 +47,6 @@ export PATH="$HOME/.gem/bin:$PATH"
 # rbenv
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
-
-bman() {
-  man "${1}" | man2html | browser
-}
-
-spotlightfile() {
-  mdfind "kMDItemDisplayName == '$@'wc";
-}
-
-spotlightcontent() {
-  mdfind -interpret "$@";
-}
 
 # Switch projects
 function p() {
