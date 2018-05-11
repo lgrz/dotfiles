@@ -1,0 +1,3 @@
+# directory must exist, no error will be given!
+R_LIBS_USER=~/.local/lib/R/site-library
+#R_LIBS_USER=~/.local/R/%p-library/%v
