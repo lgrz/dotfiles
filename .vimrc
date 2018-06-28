@@ -168,6 +168,8 @@ nnoremap <cr> :nohlsearch<cr>
 " Restore original `<cr>` when in a quickfix buffer
 autocmd BufReadPost quickfix nnoremap <buffer> <cr> <cr>
 autocmd CmdwinEnter * nnoremap <cr> <cr>
+" Quick commit for WIP
+map <leader>gw :!git add . && git commit -m 'wip'<cr>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " RENAME CURRENT FILE (thanks Gary Bernhardt)
