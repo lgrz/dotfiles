@@ -106,8 +106,8 @@ augroup vimrcFileSettings
     autocmd FileType text,md,tex setlocal textwidth=78
     " ruby, html
     autocmd FileType ruby,html,erb setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-    " python, php
-    autocmd FileType python,php setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+    " python
+    autocmd FileType python setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
     " go
     autocmd BufRead,BufNewFile *.go set filetype=go
     " rust
@@ -117,8 +117,6 @@ augroup vimrcFileSettings
     " cxx
     autocmd FileType cpp setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
     autocmd BufRead,BufNewFile *.hpp set filetype=cpp
-    " twig
-    autocmd BufRead,BufNewFile *.twig set filetype=html
     " jing
     autocmd BufRead,BufNewFile *.jing set filetype=jing
     " R
