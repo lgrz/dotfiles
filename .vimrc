@@ -122,6 +122,7 @@ augroup vimrcFileSettings
     " R
     autocmd FileType r setlocal keywordprg=Rscript\ -e\ \'?<cword>\'
     " tex, bib
+    autocmd BufRead,BufNewFile *.tex set filetype=tex
     autocmd FileType tex,bib map <buffer> <leader>g :!mupdf $HOME/bibdex/files/<cword>.pdf &<cr>
     autocmd FileType tex,bib setlocal iskeyword+=+
 augroup END
