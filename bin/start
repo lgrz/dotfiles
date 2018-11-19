@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+cp ~/.start /tmp
+vim /tmp/.start
