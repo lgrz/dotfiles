@@ -89,9 +89,12 @@ noremap <silent> <leader><f4> :vs <bar> :Explore<cr>
 ""
 "" Netrw: See 'netrw-p'
 ""
-let g:netrw_preview   = 1
+let g:netrw_preview = 1
 " let g:netrw_liststyle = 3
-let g:netrw_winsize   = 30
+let g:netrw_winsize = 30
+
+"" TeX
+let g:tex_indent_items = 1
 
 augroup vimrcFileSettings
     " Clear all commands from this group
@@ -123,6 +126,7 @@ augroup vimrcFileSettings
     autocmd FileType r setlocal keywordprg=Rscript\ -e\ \'?<cword>\'
     " tex, bib
     autocmd BufRead,BufNewFile *.tex set filetype=tex
+    autocmd FileType tex setlocal textwidth=80
     autocmd FileType tex,bib map <buffer> <leader>g :!mupdf $HOME/bibdex/files/<cword>.pdf &<cr>
     autocmd FileType tex,bib setlocal iskeyword+=+
     autocmd FileType tex setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
