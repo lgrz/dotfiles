@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
 
+# http://www.benorenstein.com/blog/my-morning-checklist
 cp ~/.start /tmp
 vim /tmp/.start
