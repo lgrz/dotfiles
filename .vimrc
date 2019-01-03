@@ -125,6 +125,8 @@ augroup vimrcFileSettings
     autocmd BufRead,BufNewFile *.tex set filetype=tex
     autocmd FileType tex,bib map <buffer> <leader>g :!mupdf $HOME/bibdex/files/<cword>.pdf &<cr>
     autocmd FileType tex,bib setlocal iskeyword+=+
+    autocmd FileType tex setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+    autocmd FileType bib setlocal tabstop=1 softtabstop=1 shiftwidth=1 expandtab
 augroup END
 
 ""
