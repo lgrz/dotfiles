@@ -9,13 +9,26 @@ xmodmap .Xmodmap
 
 [ -f "$HOME/.Xresources" ] && xrdb -merge ~/.Xresources
 
-while xsetroot -name "`date +%H:%M` `acpi -b | awk -F'[:,%]' '{printf "%s%%", $3} $2 ~ /Charging/ { print " +"}'` `uptime | sed 's/.*,//'` `pactl list sinks | grep -E '^\s+Volume:' | awk '{print "v:" $5}'`"
+status() {
+  date=$(date +%H:%M)
+  battery=$(acpi -b | awk -F'[:,%]' '{printf "%s%%", $3} $2 ~ /Charging/ { print " +"}')
+  load_avg=$(uptime | sed 's/.*,//')
+  volume=$(pactl list sinks | grep -E '^\s+Volume:' | awk '{print $5}')
+  mute=$(pactl list sinks | grep 'Mute' | awk '{print $2}')
+  if [ "$mute" = "yes" ]; then
+      volume="mute"
+  fi
+}
+
+status
+while xsetroot -name "$battery  $volume $load_avg  $date "
 do
 	sleep 15
+    status
 done &
 dunst &
 xterm &
 output=$(xrandr | awk 'NR > 2 && $2 ~ /^connected/ { print $1 }')
 xrandr --output LVDS-1 --auto --output ${output:-"HDMI-1"} --auto --right-of LVDS-1
-xautolock -time 10 -locker slock -detectsleep -notify 60 -notifier "notify-send -u critical -t 10000 -- 'LOCKING screen in 60 seconds'" &
+xautolock -time 10 -locker slock -detectsleep -notify 60 -notifier "notify-send -t 60000 -- 'screen lock (60)'" &
 exec dwm
