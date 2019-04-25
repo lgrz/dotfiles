@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+
+import sys
+import argparse
+import urllib.request
+import xml.etree.ElementTree as ET
+
+from io import BytesIO
+from datetime import datetime
+
+TEMPLATE = """@article{{{}{}arxiv,
+ author = {{{}}},
+ title = {{{}}},
+ journal = {{arXiv preprint arXiv:{}}},
+ year = {{{}}},
+}}"""
+URL = "http://export.arxiv.org/api/query?id_list={}&start=0&max_results={}"
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', '--pdf', action='store_true', help='download pdf')
+parser.add_argument("id", nargs='?', default=None)
+args = parser.parse_args()
+if args.id is None:
+  parser.print_help()
+  exit(1)
+
+id = args.id
+title = ""
+author = []
+year = 0
+with urllib.request.urlopen(URL.format(args.id, "1")) as response:
+  xml = response.read()
+  root = ET.fromstring(xml.decode('utf-8'))
+  for entry in root.findall('{http://www.w3.org/2005/Atom}entry'):
+    for t in entry:
+      if t.tag == '{http://www.w3.org/2005/Atom}title':
+        title = t.text
+      if t.tag == '{http://www.w3.org/2005/Atom}author':
+        author.append(t.find('{http://www.w3.org/2005/Atom}name').text)
+      if t.tag == '{http://www.w3.org/2005/Atom}published':
+        date = datetime.strptime(t.text, "%Y-%m-%dT%H:%M:%SZ")
+        key_year = "{:%y}".format(date)
+      if args.pdf and t.tag == '{http://www.w3.org/2005/Atom}link' and 'application/pdf' == t.attrib.get('type', ''):
+        print('downloading pdf...', file=sys.stderr)
+        res = urllib.request.urlopen(t.attrib['href'])
+        with open("a.pdf", "wb") as f:
+          f.write(res.read())
+        res.close()
+
+print(TEMPLATE.format("a", key_year, ' and '.join(author), title, id, date.year))
