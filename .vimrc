@@ -110,7 +110,7 @@ augroup vimrcFileSettings
     " ruby, html
     autocmd FileType ruby,html,erb setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
     " python
-    autocmd FileType python setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+    autocmd FileType python setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
     " go
     autocmd BufRead,BufNewFile *.go set filetype=go
     " rust
