@@ -26,6 +26,8 @@
 	excludesfile = "~/.gitglobalignore"
 	quotepath = false
 	editor = vim
+[commit]
+    template = "~/.gitmessage"
 [color]
 	ui = auto
 [color "branch"]
@@ -41,7 +43,5 @@
 	added = yellow
 	changed = green
 	untracked = cyan
-[github]
-	user = lstat
 [mergetool]
 	keepBackup = true
