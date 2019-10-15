@@ -175,6 +175,9 @@ autocmd BufReadPost quickfix nnoremap <buffer> <cr> <cr>
 autocmd CmdwinEnter * nnoremap <cr> <cr>
 " Quick commit for WIP
 map <leader>gw :!git add . && git commit -m 'wip'<cr>
+" Clang format
+map <leader>k :pyf /usr/share/clang/clang-format-6.0/clang-format.py<cr>
+imap <leader>k <c-o>:pyf /usr/share/clang/clang-format-6.0/clang-format.py<cr>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " RENAME CURRENT FILE (thanks Gary Bernhardt)
