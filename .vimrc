@@ -1,5 +1,3 @@
-call pathogen#infect()
-
 filetype plugin indent on
 set number
 set cursorline
@@ -12,6 +10,7 @@ set history=10000
 set showcmd
 set backspace=indent,eol,start
 set cmdheight=2
+set relativenumber
 "set colorcolumn=80
 
 " ignore case when completing file names and direcorties
