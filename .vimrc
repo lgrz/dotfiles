@@ -1,3 +1,4 @@
+
 filetype plugin indent on
 set number
 set cursorline
@@ -146,13 +147,12 @@ endfunction
 inoremap <tab> <c-r>=InsertTabWrapper()<cr>
 inoremap <s-tab> <c-n>
 
-""
-"" RagTag
-""
-
-inoremap <M-o>       <Esc>o
-inoremap <C-j>       <Down>
-let g:ragtag_global_maps = 1
+"" Disable default titlecase mapping
+let g:titlecase_map_keys = 0
+"" Add our own mappings for titlecase
+nmap <leader>gt <Plug>Titlecase
+vmap <leader>gt <Plug>Titlecase
+nmap <leader>gT <Plug>TitlecaseLine
 
 ""
 "" Backup and swap files
