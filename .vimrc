@@ -155,11 +155,16 @@ vmap <leader>gt <Plug>Titlecase
 nmap <leader>gT <Plug>TitlecaseLine
 
 ""
-"" Backup and swap files
+"" Backup, swap and undo files
 ""
 
-set backupdir=~/.vim/_backup/    " where to put backup files.
-set directory=~/.vim/_temp/      " where to put swap files.
+if has("patch-8.1.0251")
+    set backupdir^=~/.vim/backup//
+end
+set swapfile
+set directory^=~/.vim/swap//
+set undofile
+set undodir^=~/.vim/undo//
 
 "
 " Key Maps
