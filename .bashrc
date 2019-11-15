@@ -85,3 +85,13 @@ _completemarks() {
     return 0
 }
 complete -F _completemarks j unmark
+
+if [ -f "$HOME/.local/anaconda3/etc/profile.d/conda.sh" ]; then
+    . "$HOME/.local/anaconda3/etc/profile.d/conda.sh"
+fi
+
+if [ -d "$HOME/.local/swift4tf/usr/bin" ]; then
+    # FIXME: activate / deactivate swift, because I would like to use system
+    # installed clang
+    export PATH="$HOME/.local/swift4tf/usr/bin":$PATH
+fi
