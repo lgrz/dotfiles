@@ -41,7 +41,7 @@ set hlsearch
 let mapleader=","
 
 " so `gf` works with c++
-set path^=/usr/local/c++/8
+set path^=/usr/include/c++/8
 
 " FIXME: When compiling vim from source the alternate file mapping stops working
 nnoremap <c-6> <c-^>
