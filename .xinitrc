@@ -26,7 +26,7 @@ do
 	sleep 15
     status
 done &
-dunst &
+systemctl --user import-environment DISPLAY # dunst.service
 xterm &
 output=$(xrandr | awk 'NR > 2 && $2 ~ /^connected/ { print $1 }')
 xrandr --output LVDS-1 --auto --output ${output:-"HDMI-1"} --auto --right-of LVDS-1
