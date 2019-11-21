@@ -2,6 +2,8 @@
 
 set -xe
 
+. /etc/X11/Xsession.d/20dbus_xdg-runtime
+
 # key repeat rate [delay, repeat/second]
 xset r rate 200 100
 # apply modmap settings
@@ -26,7 +28,7 @@ do
 	sleep 15
     status
 done &
-systemctl --user import-environment DISPLAY # dunst.service
+
 xterm &
 output=$(xrandr | awk 'NR > 2 && $2 ~ /^connected/ { print $1 }')
 xrandr --output LVDS-1 --auto --output ${output:-"HDMI-1"} --auto --right-of LVDS-1
