@@ -1,0 +1,352 @@
+#!/usr/bin/perl
+
+# GREP RENAME -- A Batch File Renaming Utility
+
+# Purpose:    Perl script that allows to batch rename files & folders by use of perl's regular expressions
+# Usage:      greprename 's/PATTERN/REPLACEMENT/[egimosx]' [FILE] ...
+
+# Copyright:  Matthias Steffens <mailto:grep@extracts.de>, use at your own risk!
+# Inspired:   by a post on <http://www.macosxhints.com> from "robh" (on 10-May-2001) [search for 'batch renamer' & see comments]
+
+# Updates:    <http://grep.extracts.de/greprename/>
+
+# Help:       For help with the syntax type 'greprename -h'
+#             To view some usage examples type 'greprename -e'
+#             For help with regular expressions see the 'perlre' man page: <http://www.perldoc.com/perl5.6/pod/perlre.html>
+#             To learn more about perl's search & replace function ('s/.../.../') consult the 'perlop' man page: <http://www.perldoc.com/perl5.6/pod/perlop.html>
+
+# Limits:     Unless you'll perform some clever piping, the script cannot dive into sub-directories
+#             File names containing non-ascii characters will be renamed correctly but are not displayed correctly in the LOG
+
+# --------------------------------------------------------------------------------------------------------------
+
+use Cwd;
+
+my $i = 0; # Define counter variables
+my $ct = 0;
+my $file_ct = 0;
+my $dir_ct = 0;
+my $err = 0;
+
+# specify some variables for use in the LOG file:
+my $time = localtime; # get the current time
+my $user = getlogin; # get the name of the current user
+my $dir = getcwd(); # get the current working directory
+
+# specify the default behaviour how to handle files and directories (if no options are provided):
+my $RenameFiles = 1; # by default we do rename files
+my $RenameDirectories = 1; # by default we do rename directories
+my $SimulationMode = 0; # by default we attempt to perform any renaming actions (i.e., no simulation mode)
+my $options = '';
+
+$LOG_path = $ENV{"HOME"} . "/greprename.log"; # adjust the path & name of the LOG file as needed!
+open(LOG, ">>$LOG_path") or die "Drat: $!\n"; # Open LOG file in append mode
+
+# if any options are given, check for valid options:
+if ((($ARGV[0] =~ /^-(?!-)/) && ($ARGV[0] !~ /^-([dfDFs]+|h|v|e)$/)) xor (($ARGV[0] =~ /^--/) && ($ARGV[0] !~ /^--(help|version|examples)/))) {
+	print "\nError: Invalid options or combination of options specified!\n       Type 'greprename -h' for help with the syntax.\n\n";
+    exit;
+}
+else { # options format is ok, so let's parse them: 
+	# if the user asked for --help/-h or didn't provide any input, call the 'usage' subroutine:
+	if (($ARGV[0] eq '--help') or ($ARGV[0] eq '-h') or ($ARGV[0] eq '')) { &usage (0); }
+	# account for other optional parameters:
+	elsif (($ARGV[0] eq '--version') or ($ARGV[0] eq '-v')) { &version (0); } # show some version information
+	elsif (($ARGV[0] eq '--examples') or ($ARGV[0] eq '-e')) { &examples (0); } # print some usage examples
+	elsif ($ARGV[0] =~ /^-[dfDFs]+$/) { # if any of the file renaming options or -s are specified...
+										# Note: the -f and -F options (or the -d and -D options, respectively) override each
+										#       other and the command's actions are determined by the last one specified:
+		if ($ARGV[0] =~ /^-[dfDFs]*?f[dDs]*$/) { $RenameFiles = 1; } # rename files if the -f option is set last
+		if ($ARGV[0] =~ /^-[dfDFs]*?F[dDs]*$/) { $RenameFiles = 0; } # do NOT rename files if the -F option is set last
+		if ($ARGV[0] =~ /^-[dfDFs]*?d[fFs]*$/) { $RenameDirectories = 1; } # rename directories if the -d option is set last
+		if ($ARGV[0] =~ /^-[dfDFs]*?D[fFs]*$/) { $RenameDirectories = 0; } # do NOT rename directories if the -D option is set last
+		if ($ARGV[0] =~ /^-[dfDF]*s/) { $SimulationMode = 1; } # do NOT rename any files or folders if the -s option is set
+	}
+}
+
+# get the rename expression (must be of the form 's/.jpg/.jpeg/'):
+if ($ARGV[0] =~ /^(?!-)/) { # if there are no options specified as the first argument...
+	if ($ARGV[0] eq '') {
+		print "\nError: The substitution operator is missing!\n       Type 'greprename -h' for help with the syntax.\n\n";
+	    exit;
+	}
+	$expr = $ARGV[0]; # must be the first argument if no option is set
+}
+else {
+	if ($ARGV[1] eq '') {
+		print "\nError: The substitution operator is missing!\n       Type 'greprename -h' for help with the syntax.\n\n";
+	    exit;
+	}
+	$expr = $ARGV[1]; # must be the second argument if there's some option(s) specified
+	$options = $ARGV[0]; # extract the options used by the user (for display in the LOG)
+}
+
+# depending on the options chosen by the user, set some info strings for display in the LOG:
+if ($RenameFiles && $RenameDirectories) { $OptionsInfo = '(rename files and directories)'; }
+elsif ($RenameFiles && !$RenameDirectories) { $OptionsInfo = '(rename files only)'; }
+elsif (!$RenameFiles && $RenameDirectories) { $OptionsInfo = '(rename directories only)'; }
+elsif ($SimulationMode) { $OptionsInfo = '(simulation mode - don\'t rename anything!)'; }
+
+$delim = substr($expr,1,1); # extract the used delimiter (e.g., for 's/.../.../' it would be '/')
+@patterns = split($delim,$expr); # separate search & replace patterns (for display in the LOG header)
+
+ # obtain the files to process:
+if ($options =~ /^$/) { @files = @ARGV[1..$#ARGV]; } # start with the second argument if no option is set
+else { @files = @ARGV[2..$#ARGV]; } # otherwise start with the third argument
+$files_ct = scalar @files; # count the number of files to process
+if ($files_ct == 0) {
+	print "\nError: The file operand is missing!\n       Type 'greprename -h' for help with the syntax.\n\n";
+	exit;
+}
+
+print "\n";
+
+# before renaming anything, print out what is going to happen:
+# (format: "old-file-name ==> new-file-name")
+foreach (@files) {
+	$old = $_;
+	if (!$RenameDirectories) { next if -d $old; } # ommit directory names if $RenameDirectories == 1
+	if (!$RenameFiles) { next if !-d $old; } # ommit file names if $RenameFiles == 1
+	next if !-e $old; # skip any non-existing file specifications
+
+	$ct++; # provide a counter variable that can be used in replace patterns
+
+	eval($expr); # evaluate the search pattern -> $_ will hold the new file name
+	next if $_ eq $old; # if the new file name isn't the same as the old one...
+
+	if (-d $old) { $dir_ct++; } # increase directory counter if the found item is a directory
+	else { $file_ct++; } # otherwise, increase file counter if the found item is not a directory
+
+	print "$old ==> $_\n"; # ... output a preview to the user
+	$RENAME{$old} = $_; # save new and old file name to a hash
+}
+
+$| = 1; # If set to nonzero, forces a flush after every write or print on the output channel currently selected. Default is 0.
+
+# if there were files/folders found matching the user's search/replace expression:
+if (scalar %RENAME) {
+	$fno = scalar (keys %RENAME); # count the number of files/folders that matched the users search/replace expression
+	if ($fno > 1) { # adjust the wording if there's more than one file/folder found
+		$plural1 = "s";
+		$plural2 = "these";
+	}
+	else { $plural2 = "this"; }
+	if ($file_ct > 1) { $plural3 = "s"; } # adjust the wording if there's more than one file found
+	if ($dir_ct > 1) { $plural4 = "s"; } # adjust the wording if there's more than one directory found
+
+	if ($SimulationMode == 1) { $AskForRenaming = ''; } else { $AskForRenaming = " Rename $plural2 item$plural1? (y): "; }
+
+	# then, ask the user if it's ok to rename those files:
+	if ($file_ct > 0 && $dir_ct == 0) { print "\n$file_ct file$plural3 found.$AskForRenaming"; } # only files found
+	if ($file_ct == 0 && $dir_ct > 0) { print "\n$dir_ct folder$plural4 found.$AskForRenaming"; } # only directories found
+	if ($file_ct > 0 && $dir_ct > 0) { print "\n$fno item$plural1 ($file_ct file$plural3 & $dir_ct folder$plural4) found.$AskForRenaming"; } # files and directories found
+	
+	if ($SimulationMode == 1) { # if the user choose not to rename anything ('-s' option was used) we exit here -> simulation mode!
+		print " Simulation mode. Nothing renamed!\n\n";
+		exit;
+	}
+
+	# proceed if the user hit 'y':
+	if ( <STDIN> =~ /y/i) {
+		print "\n";
+		print LOG "$time\n------------------------\nCurrent user:      '$user'\nCurrent directory: '$dir'\n"; # print LOG header
+		# append the used search & replace options, patterns and modifiers to the LOG header:
+		print LOG "Used options:      '$options' $OptionsInfo\nSearch pattern:    '$patterns[1]'\nReplace pattern:   '$patterns[2]'\nUsed modifiers:    '$patterns[3]'\n\n";
+
+		foreach $f (keys %RENAME) {
+			if (-d $f) { $ItemType = "folder"; } else { $ItemType = "file"; } # check if the current item is a directory and adjust the wording accordingly
+			if ($RENAME{$f} eq '') { # check if the replacement string is empty
+				$err++;
+				print LOG "¥ Err:  New $ItemType name would be empty!\n  Old:  '$f'\t'$dir/$f'\n  New:  '$RENAME{$f}'\t'$dir/$RENAME{$f}'\n";
+				next;
+			}
+
+			if ($f =~ /^$RENAME{$f}$/i) { # check if old and new file names are the same if compared case insensitive
+				$OnlyCaseTransformation = 1; # the file test -e is case insensitive, so we'll need to apply a workaround if it's only case transformation that's going
+				                             # to happen; otherwise -e would prevent the file from getting renamed (causing the error "New file name already exists!")
+			}
+			else { $OnlyCaseTransformation = 0; }
+
+			# check if a file with this name already exists (within the current directory); if so, then
+			# we'll only allow to rename the file if it's solely case transformation that's going to happen
+			if ((!-e $RENAME{$f}) xor (-e $RENAME{$f} && ($OnlyCaseTransformation == 1))) {
+				if (!$RenameDirectories) { next if -d $f } # ommit directory names unless $RenameDirectories == 1
+
+				print STDERR "RENAMING \"$f\" TO \"$RENAME{$f}\"\n"; # print a status message for each rename action
+				$Rename_OK = rename($f,$RENAME{$f}); # perform the actual renaming by use of perl's rename function
+				# NOTE: using the system mv command will work as well, but in the form below it cannot handle
+				#       file names containing single quotes(!):
+				# print STDERR `mv '$f' '$RENAME{$f}'`; # perform the actual renaming by use of the mv command
+				if ($Rename_OK) {
+					$i++; # counter that gets used in the LOG file
+					print LOG "× Err:  \n  Old:  '$f'\t'$dir/$f'\n  New:  '$RENAME{$f}'\t'$dir/$RENAME{$f}'\n"; # write renaming info to LOG file
+				}
+				else {
+					$err++; # count the occurring errors
+					if (-d $RENAME{$f}) {
+						print LOG "¥ Err:  New folder name already exists!\n  Old:  '$f'\t'$dir/$f'\n  New:  '$RENAME{$f}'\t'$dir/$RENAME{$f}'\n";
+					}
+					else {
+						print LOG "¥ Err:  Renaming failed for some unknown reason!\n  Old:  '$f'\t'$dir/$f'\n  New:  '$RENAME{$f}'\t'$dir/$RENAME{$f}'\n";
+					}
+				}
+			}
+			else {
+				$err++; # count the occurring errors
+				print LOG "¥ Err:  New $ItemType name already exists!\n  Old:  '$f'\t'$dir/$f'\n  New:  '$RENAME{$f}'\t'$dir/$RENAME{$f}'\n";
+			}
+		}
+
+		if ($i != 1) { $plural5 = "s" };
+		if ($err > 0) {
+			if ($err > 1) { $plural6 = "s" };
+			print "\nRenamed $i item$plural5. Failed to rename $err item$plural6!\nPlease check the log file at '$LOG_path'.\n\n"; # inform the user that there were some errors
+		}
+		else {
+			print "\nRenamed $i item$plural5.\n\n";
+		}
+		print LOG "\nNo. of items processed:  $files_ct\nNo. of items renamed:    $i\nNo. of errors:           $err\n\n\n"; # append rename summary to LOG 
+	}
+	else {
+		print STDERR "\nNothing renamed!\n\n"; # else inform the user that nothing was renamed
+	}
+}
+else {
+	print STDERR "There are no items to rename -OR- Your search pattern doesn't match any items!\n\n"; # inform the user that no matching files/folders were found
+}
+
+close(LOG) or die "Drat: $!\n"; # close LOG file
+
+# print usage and exit:
+sub usage
+{
+    local ($status) = @_;
+    print "\ngreprename 1.0 by Matthias Steffens, http://grep.extracts.de/greprename/\n\n"
+    		. "Usage:   greprename [-hvefFdDs] 's/PATTERN/REPLACEMENT/[egi]' FILE ...\n\n"
+    		. "Options:       -h, --help       - display this help text\n"
+    		. "               -v, --version    - display version information\n"
+    		. "               -e, --examples   - display usage examples\n"
+    		. "               -f               - rename files\n"
+    		. "               -F               - do NOT rename files\n"
+    		. "               -d               - rename directories\n"
+    		. "               -D               - do NOT rename directories\n"
+    		. "               -s               - display preview only (simulation mode)\n\n"
+    		. "Notes:   Ommitting any of the file renaming options will cause -f and/or\n"
+    		. "         -d to be assumed as default.\n\n"
+    		. "         The -f and -F options (or the -d and -D options, respectively)\n"
+    		. "         override each other and the command's actions are determined by\n"
+    		. "         the last one specified.\n\n";
+    exit $status;
+}
+
+# print version number and exit:
+sub version
+{
+    local ($status) = @_;
+    print "\ngreprename version 1.0\ncheck for updates at http://grep.extracts.de/greprename/\n\n";
+    exit $status;
+}
+
+# print examples and exit:
+sub examples
+{
+    local ($status) = @_;
+	print <<'END_EXAMPLES';
+
+   --------------------------------------------------------------------------------
+   GREPRENAME USAGE EXAMPLES:
+   --------------------------------------------------------------------------------
+
+   Case 1:    To change the file extension of every file from .jpg to .jpeg, type:
+   
+   greprename 's/\.jpg$/\.jpeg/' *
+   
+   Examples:  file_one.jpg   ==> file_one.jpeg
+              file_two.jpg   ==> file_two.jpeg
+              file_three.jpg ==> file_three.jpeg
+
+   --------------------------------------------------------------------------------
+
+   Case 2:    To apply case transformations to every file, e.g. form words (= make
+              its first char uppercase and the following chars lowercase), type:
+   
+   greprename 's/([[:alpha:]])([[:alpha:]]+)/\u$1\L$2/g' *
+   
+   Note the 'g'-modifier (= global) at the end which causes every occurrence to
+   get processed. Otherwise, only the first match would be transformed!
+   
+   Examples:  file_one   ==> File_One
+              file_two   ==> File_Two
+              file_three ==> File_Three
+
+   --------------------------------------------------------------------------------
+
+   Case 3:    To re-arrange JPEG files with date info (e.g., from "dd.mm.yyyy" to
+              "yyyy-mm-dd") so that they sort correctly in the finder, type:
+   
+   greprename 's/(\d{2})\.(\d{2})\.(\d{4})/$3-$2-$1/' *.jpg
+   
+   The shell wildcard expression '*.jpg' will filter the current directory for
+   files with a .jpg file extension causing only JPEG files to be processed.
+   
+   Examples:  13.01.2002.jpg ==> 2002-01-13.jpg
+              19.11.2003.jpg ==> 2003-11-19.jpg
+              31.12.2003.jpg ==> 2003-12-31.jpg
+
+   --------------------------------------------------------------------------------
+   ADVANCED EXAMPLES (that make use of perls 'e'-modifier which
+   allows for code execution within the replacement pattern):
+   --------------------------------------------------------------------------------
+
+   Case 4:    To append a dash & an incrementing number to the end of
+              the file (starting at 10 and incrementing by 1), e.g. type:
+   
+   greprename 's/.+/"$&-".($ct+9)/e' *
+   
+   Note the use of the variable $ct. This counter variable gets defined within the
+   script. Starting at 1, its value will increment by 1 with each rename action.
+   
+   Examples:  file_one   ==> file_one-10
+              file_two   ==> file_two-11
+              file_three ==> file_three-12
+
+   --------------------------------------------------------------------------------
+
+   Case 5:    To prefix each file name with an incrementing number (starting at
+              80, incrementing by 10 and padded with leading zeros), e.g. type:
+   
+   greprename 's/^/sprintf("%03d_",($ct*10+70))/e' *
+   
+   Examples:  file_one   ==> 080_file_one
+              file_two   ==> 090_file_two
+              file_three ==> 100_file_three
+
+   --------------------------------------------------------------------------------
+
+   Case 6:    To take any existing number(s) from a file name & multiply
+              each of the numbers found by the factor 2, type:
+   
+   greprename 's/\d+/($&*2)/eg' *
+   
+   Examples:  2-file-1 ==> 4-file-2
+              file-20  ==> file-40
+              400-file ==> 800-file
+
+   --------------------------------------------------------------------------------
+
+   Case 7:    To take (the first) existing number from a file name & reformat
+              it with padding spaces (upto a depth of 4 chars), e.g. type:
+   
+   greprename 's/(\D+)(\d+)/sprintf("$1%4d",$2)/e' *
+   
+   Examples:  file-1   ==> file-   1
+              file-20  ==> file-  20
+              file-400 ==> file- 400
+
+   --------------------------------------------------------------------------------
+
+END_EXAMPLES
+    exit $status;
+}
+
+__END__
