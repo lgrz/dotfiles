@@ -1,0 +1,59 @@
+#
+# Common settings
+#
+
+set editor = "vim"
+set send_charset = "us-ascii:utf-8"
+
+# message header cache
+set header_cache = "~/.mutt/cache/headers"
+
+# default mailbox type when creating new folders
+set mbox_type = Maildir
+
+# generate 'From' field when sending messages
+set use_from = yes
+# force sendmail to use the same address for the envelope as the 'From' header
+# field. http://dev.mutt.org/trac/wiki/MuttFaq/Header
+set use_envelope_from = yes
+
+# force ssl for all connections
+set ssl_force_tls = yes
+
+# show threaded conversation reverse sorted by last received
+set sort = reverse-threads
+set sort_aux = last-date-received
+
+set date_format = "!%a, %b %d, %Y at %I:%M:%S%p %Z"
+
+# always include quote in replies
+set include = yes
+
+# don't add user-agent header to outgoing messages
+set user_agent = no
+
+# no confirmation when appending messages to another mailbox
+set confirmappend = no
+# no confirmation when deleting messages
+set delete
+# clear new flag after reading a message, not when we've seen it in the list
+unset mark_old
+
+# gmail folder navigation shortcuts
+macro index,pager gi "<change-folder>=$my_inbox<enter>" "Go to inbox"
+
+# ignore all headers by default
+ignore *
+# show these headers
+unignore from to cc subject date user-agent
+# remove any previously set ordering (steve losh)
+unhdr_order *
+# header order
+hdr_order from subject to cc date
+
+# custom key bindings
+bind pager [ half-up
+bind pager ] half-down
+
+# don't jump to next message
+set pager_stop = yes
