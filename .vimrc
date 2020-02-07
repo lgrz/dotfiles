@@ -1,4 +1,7 @@
 
+unlet! skip_defaults_vim
+source $VIMRUNTIME/defaults.vim
+
 filetype plugin indent on
 set number
 set cursorline
@@ -45,6 +48,7 @@ set path^=/usr/include/c++/8
 
 " FIXME: When compiling vim from source the alternate file mapping stops working
 nnoremap <c-6> <c-^>
+
 
 " Insert blank line above/below, and move the cursor over
 nnoremap <silent> [<space> :pu!=''<cr>:']+1<cr>
