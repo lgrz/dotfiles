@@ -16,6 +16,7 @@ set backspace=indent,eol,start
 set cmdheight=2
 set relativenumber
 "set colorcolumn=80
+set mouse=
 
 " ignore case when completing file names and direcorties
 set wildignorecase
