@@ -191,8 +191,8 @@ autocmd CmdwinEnter * nnoremap <cr> <cr>
 " Quick commit for WIP
 map <leader>gw :!git add . && git commit -m 'wip'<cr>
 " Clang format
-map <leader>k :pyf /usr/share/clang/clang-format-7/clang-format.py<cr>
-imap <leader>k <c-o>:pyf /usr/share/clang/clang-format-7/clang-format.py<cr>
+map <leader>k :py3f /usr/share/clang/clang-format-7/clang-format.py<cr>
+imap <leader>k <c-o>:py3f /usr/share/clang/clang-format-7/clang-format.py<cr>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " RENAME CURRENT FILE (thanks Gary Bernhardt)
