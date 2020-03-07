@@ -194,6 +194,12 @@ map <leader>gw :!git add . && git commit -m 'wip'<cr>
 map <leader>k :py3f /usr/share/clang/clang-format-7/clang-format.py<cr>
 imap <leader>k <c-o>:py3f /usr/share/clang/clang-format-7/clang-format.py<cr>
 
+" Format current file with clang-format
+function FormatFile()
+  let l:lines="all"
+  py3f /usr/share/clang/clang-format-7/clang-format.py
+endfunction
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " RENAME CURRENT FILE (thanks Gary Bernhardt)
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
