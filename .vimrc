@@ -50,11 +50,6 @@ set path^=/usr/include/c++/8
 " FIXME: When compiling vim from source the alternate file mapping stops working
 nnoremap <c-6> <c-^>
 
-
-" Insert blank line above/below, and move the cursor over
-nnoremap <silent> [<space> :pu!=''<cr>:']+1<cr>
-nnoremap <silent> ]<space> :pu=''<cr>:'[-1<cr>
-
 "" What to do when the return key breaks on your keyboard
 "" Remeber to use <C-v> to insert an `'`
 " nnoremap ' :nohlsearch<cr>
@@ -62,7 +57,6 @@ nnoremap <silent> ]<space> :pu=''<cr>:'[-1<cr>
 
 "" When the t key breaks...
 " inoremap <c-e> t
-
 
 ""
 "" Save with CTRL-s
@@ -176,6 +170,9 @@ set swapfile
 set directory^=~/.vim/swap//
 set undofile
 set undodir^=~/.vim/undo//
+
+" Search command to round numbers
+" %s/0.\d\{4}/\=printf("%.3f", str2float(submatch(0)))/g
 
 "
 " Key Maps
