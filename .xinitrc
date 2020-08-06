@@ -12,7 +12,7 @@ xmodmap .Xmodmap
 [ -f "$HOME/.Xresources" ] && xrdb -merge ~/.Xresources
 
 status() {
-  date=$(date +%H:%M)
+  date=$(date "+%a, %d %b  %H:%M")
   battery=$(acpi -b | awk -F'[:,%]' '{printf "%s%%", $3} $2 ~ /Charging/ { print " +"}')
   load_avg=$(uptime | sed 's/.*,//')
   volume=$(pactl list sinks | grep -E '^\s+Volume:' | awk '{print $5}')
