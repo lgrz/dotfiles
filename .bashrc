@@ -9,6 +9,10 @@ alias cdl='cd ~/Downloads'
 # Allow ctrl-s to pass through to vim
 stty -ixon
 
+# When set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+shopt -s globstar
+
 export PATH="$HOME/bin:$PATH"
 export PATH=/usr/local/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
@@ -23,6 +27,8 @@ alias grep='grep --color'
 # better history
 declare -x HISTSIZE=50000
 declare -x HISTFILESIZE=50000
+# don't put duplicate lines or lines starting with space in the history
+HISTCONTROL=ignoreboth
 
 # tab completion for sudo, man
 complete -cf sudo
