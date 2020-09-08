@@ -15,6 +15,10 @@ stty -ixon
 # match all files and zero or more directories and subdirectories.
 shopt -s globstar
 
+export LANG="en_US.utf8"
+export LC_PAPER="en_AU.utf8"
+export LC_MEASUREMENT="en_AU.utf8"
+
 export PATH="$HOME/bin:$PATH"
 export PATH=/usr/local/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
