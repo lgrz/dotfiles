@@ -3,8 +3,10 @@
 
 alias l='ls -lahG'
 alias ll='ls -lahG'
-alias cdesk='cd ~/Desktop'
-alias cdl='cd ~/Downloads'
+alias lr='ls -lahrt'
+alias cdl='cd $HOME/Downloads'
+alias cdd='cd $HOME/doc'
+alias cdb='cd $HOME/books'
 
 # Allow ctrl-s to pass through to vim
 stty -ixon
