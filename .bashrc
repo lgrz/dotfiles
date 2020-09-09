@@ -85,11 +85,9 @@ function unmark {
     rm -i "$MARKPATH/$1"
 }
 function marks {
-    # linux
-    # ls -l "$MARKPATH" | sed 's/  / /g' | cut -d' ' -f9- | sed 's/ -/\t-/g' && echo
-    # osx
-    \ls -l "$MARKPATH" | tail -n +2 | sed 's/  / /g' | cut -d' ' -f9- | awk -F ' -> ' '{printf "%-10s -> %s\n", $1, $2}'
+    ls -l "$MARKPATH" | tail -n +2 | sed 's/  / /g' | cut -d' ' -f9- | awk -F ' -> ' '{printf "%-10s -> %s\n", $1, $2}'
 }
+alias m='marks'
 _completemarks() {
     local curw=${COMP_WORDS[COMP_CWORD]}
     local wordlist=$(find $MARKPATH -type l -exec basename {} \;)
