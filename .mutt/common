@@ -9,8 +9,9 @@
 set editor = "vim"
 set send_charset = "us-ascii:utf-8"
 
-# message header cache
-set header_cache = "~/.mutt/cache/headers"
+# message header, body cache
+set header_cache = "~/.mutt/cache/header"
+set message_cachedir = "~/.mutt/cache/body"
 
 # default mailbox type when creating new folders
 set mbox_type = Maildir
@@ -52,13 +53,28 @@ unhdr_order *
 # header order
 hdr_order from subject to cc date
 
-# gmail folder navigation shortcuts
-macro index,pager gi "<change-folder>=$my_inbox<enter>" "Go to inbox"
+# don't jump to next message
+set pager_stop = yes
+
+# set high read/write progress indicators
+set read_inc = 1000
+set write_inc = 1000
+
+# file browser mask
+# the default is: "!^\\.[^.]"
+set mask = ""
+
+# text wrap?
+set wrap = 80
+
+# wait for user to press key after external commands from certain functions
+# <shell-escape>, etc
+unset wait_key
 
 # custom key bindings
+bind index R group-reply
 bind index gg first-entry
 bind index G last-entry
-bind index R group-reply
 bind index <tab> sync-mailbox
 bind index <space> collapse-thread
 
@@ -85,9 +101,7 @@ macro pager Y "<enter-command>set editor=\"~/bin/editlabel menu\"\n\
     <enter-command>set editor=vim\n" "Edit labels"
 macro index \Cy "<limit>~y " "Limit view to label"
 
-# don't jump to next message
-set pager_stop = yes
+# change accounts
+macro index <f1> "<change-folder> =lgrz.oov/INBOX<enter>"
+macro index <f2> "<change-folder> =fm/INBOX<enter>"
 
-# set high read/write progress indicators
-set read_inc = 1000
-set write_inc = 1000
