@@ -80,6 +80,10 @@ set listchars=tab:┊\ ,eol:¬
 ""
 "" Arrow keys are not allowed
 ""
+nnoremap <left> <nop>
+nnoremap <right> <nop>
+nnoremap <up> <nop>
+nnoremap <down> <nop>
 inoremap <left> <nop>
 inoremap <right> <nop>
 inoremap <up> <nop>
@@ -111,7 +115,7 @@ augroup vimrcFileSettings
         \ endif
 
     " text
-    autocmd FileType text,md,tex setlocal textwidth=78
+    autocmd FileType text,md setlocal textwidth=78
     " ruby, html
     autocmd FileType ruby,html,erb setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
     " python
@@ -173,6 +177,9 @@ set undodir^=~/.vim/undo//
 
 " Search command to round numbers
 " %s/0.\d\{4}/\=printf("%.3f", str2float(submatch(0)))/g
+"
+" Format markdown table (column with '-o' option)
+" column -t -s'|' -o'|'
 
 "
 " Key Maps
