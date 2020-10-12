@@ -17,6 +17,8 @@ set cmdheight=2
 set relativenumber
 "set colorcolumn=80
 set mouse=
+" case insensitive search with lowercase, case sensitive otherwise
+set smartcase
 
 " ignore case when completing file names and direcorties
 set wildignorecase
