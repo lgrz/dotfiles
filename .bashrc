@@ -7,6 +7,7 @@ alias lr='ls -lahrt'
 alias cdl='cd $HOME/Downloads'
 alias cdd='cd $HOME/doc'
 alias cdb='cd $HOME/books'
+alias R='R --no-save'
 
 # Allow ctrl-s to pass through to vim
 stty -ixon
