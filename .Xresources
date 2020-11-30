@@ -6,7 +6,7 @@ xterm*locale: true
 xterm*metaSendsEscape: true
 xterm*saveLines: 8192
 xterm*rightScrollBar: true
-xterm*scrollBar: true
+xterm*scrollBar: false
 xterm*reverseVideo: off
 xterm*foreground: rgb:a8/a8/a8
 xterm*background: rgb:00/00/00

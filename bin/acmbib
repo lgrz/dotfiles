@@ -1,31 +1,31 @@
-#!/usr/bin/env python
+#!/bin/bash
 
-import sys
-import argparse
+set -xe
 
-from urllib import request
-from urllib.parse import urlparse
-from urllib.parse import parse_qs
+if [ $# -ne 1 ]; then
+    echo "usage: $(basename $0) <url>" 1>&2
+    exit 1
+fi
 
-if __name__ == "__main__":
-  parser = argparse.ArgumentParser()
-  parser.add_argument("url", default=None)
-  args = parser.parse_args()
 
-  o = parse_qs(urlparse(args.url).query)
-  doid = o['doid']
-  parent_id, id = doid[0].split('.')
-  referer = "https://dl.acm.org/exportformats.cfm?id={}&expformat=bibtex"
-  referer = referer.format(id)
-  url = "https://dl.acm.org/downformats.cfm?id={}&parent_id={}&expformat=bibtex"
-  url = url.format(id, parent_id)
+URI=$1
+# URI='https://dl.acm.org/doi/10.1145/1571941.1571950'
+URIPATH=$(perl -M'URI' -e 'print URI->new($ARGV[0])->path;' -- "$URI")
+URIPATH=${URIPATH#/doi/}
+DOI="dois=$URIPATH"
+UA='Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0'
+COOKIEJAR=$(mktemp)
+BIBTEXURL='https://dl.acm.org/action/exportCiteProcCitation'
 
-  req = request.Request(
-    url,
-    headers = {
-      'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0',
-      'Referer': referer,
-    })
-  with request.urlopen(req) as response:
-    result = response.read()
-    print(result.decode('utf-8'))
+curl \
+    --user-agent "$UA" \
+    --cookie-jar $COOKIEJAR \
+    $URI
+
+curl \
+    --user-agent "$UA" \
+    --cookie $COOKIEJAR \
+    --data-urlencode $DOI \
+    --data-urlencode 'targetFile=custom-bibtex' \
+    --data-urlencode 'format=bibtex' \
+    $BIBTEXURL

@@ -1,0 +1,49 @@
+#!/bin/bash
+
+set -xe
+
+# key repeat rate [delay, repeat/second]
+xset r rate 200 100
+# apply modmap settings
+xmodmap .Xmodmap
+
+[ -f "$HOME/.Xresources" ] && xrdb -merge ~/.Xresources
+
+status() {
+  date=$(date "+%a, %d %b  %H:%M")
+  battery=$(acpi -b | awk -F'[:,%]' '{printf "%s%%", $3} $2 ~ /Charging/ { print " \xe2\x9a\xa1"}')
+  load_avg=$(uptime | sed 's/.*,//')
+  volume=$(pactl list sinks | grep -E '^\s+Volume:' | awk '{print $5}')
+  mute=$(pactl list sinks | grep 'Mute' | awk '{print $2}')
+  if [ "$mute" = "yes" ]; then
+      volume="mute"
+  fi
+}
+
+status
+while xsetroot -name "$battery  $volume $load_avg  $date "
+do
+	sleep 15
+    status
+done &
+
+# FIXME: replace keychain with this
+# eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)
+# export SSH_AUTH_SOCK
+
+output=$(xrandr | awk 'NR > 2 && $2 ~ /^connected/ { print $1 }')
+xrandr --output LVDS-1 --auto --output ${output:-"HDMI-1"} --auto --left-of LVDS-1
+# screen lock timeout
+xset s 1800
+xss-lock slock &
+# xautolock -time 20 -locker slock -detectsleep -notify 60 -notifier "notify-send -t 120 -- 'screen lock (60)'" &
+
+# FIXME: make images for each screen size and use them for each screen
+# FIXME: use shuf to get randomized list for each screen size
+# Must be run after xrandr to set background for all connected displays: feh
+# [options] <image-for-screen-0> <image-for-screen-1>
+feh --bg-fill --randomize $HOME/Pictures/daily-random/* &
+xterm &
+# FIXME: just want transparency from picom, nothing else
+# picom &
+exec dwm
