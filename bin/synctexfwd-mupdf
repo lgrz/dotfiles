@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+LINE="$1"
+COL="$2"
+TEXF="$3"
+PDFF="$4"
+
+PAGE=$(synctex view -i "$LINE:$COL:$TEXF" -o "$PDFF" \
+    grep -im1 '^page' | awk -F: '{print $2}'
+PAGE=${$PAGE:-0}
+
+# limit search to session id
+SESS=$(shell ps -H --no-header -o pid,sess | tail -1 | awk '{print $$2}')
+# match on cmd and filename (multiple spaces between cmd and args are
+# normalized)
+PID=$(pgrep -fao -s $SESS "mupdf-x11 $PDFF" | awk 'print $1}')
+
+# jump to specified page in mupdf
+xdotool search --pid $PID --name $PDFF type --window %1 "${PAGE}g"
