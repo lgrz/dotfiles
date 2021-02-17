@@ -1,6 +1,8 @@
 #!/bin/bash
 
-set -xe
+# Don't leave this on or you'll end up with a really big `.xsession-errors`
+# file, in particular that `while` loop below.
+# set -xe
 
 # key repeat rate [delay, repeat/second]
 xset r rate 200 100
@@ -10,6 +12,7 @@ xmodmap .Xmodmap
 [ -f "$HOME/.Xresources" ] && xrdb -merge ~/.Xresources
 
 status() {
+  hdd=$(df -h / | awk 'NR==2{print $4}')
   date=$(date "+%a, %d %b  %H:%M")
   battery=$(acpi -b | awk -F'[:,%]' '{printf "%s%%", $3} $2 ~ /Charging/ { print " \xe2\x9a\xa1"}')
   load_avg=$(uptime | sed 's/.*,//')
@@ -21,7 +24,7 @@ status() {
 }
 
 status
-while xsetroot -name "$battery  $volume $load_avg  $date "
+while xsetroot -name "$battery  $hdd $volume $load_avg  $date "
 do
 	sleep 15
     status
@@ -35,15 +38,14 @@ output=$(xrandr | awk 'NR > 2 && $2 ~ /^connected/ { print $1 }')
 xrandr --output LVDS-1 --auto --output ${output:-"HDMI-1"} --auto --left-of LVDS-1
 # screen lock timeout
 xset s 1800
+# disable dpms (energy features)
+xset dpms 0 0 0
 xss-lock slock &
 # xautolock -time 20 -locker slock -detectsleep -notify 60 -notifier "notify-send -t 120 -- 'screen lock (60)'" &
 
-# FIXME: make images for each screen size and use them for each screen
-# FIXME: use shuf to get randomized list for each screen size
-# Must be run after xrandr to set background for all connected displays: feh
-# [options] <image-for-screen-0> <image-for-screen-1>
-feh --bg-fill --randomize $HOME/Pictures/daily-random/* &
+# Must be run after xrandr to set background for all connected displays:
+# feh [options] <image-for-screen-0> <image-for-screen-1>
+feh --bg-fill $HOME/Pictures/daily-random/cur/* &
 xterm &
-# FIXME: just want transparency from picom, nothing else
 # picom &
 exec dwm
