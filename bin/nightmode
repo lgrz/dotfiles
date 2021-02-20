@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# current night settings
+redshift -vP -O 4500 -g 1.0:1.0:1.0 -b .3
+
+echo ""
+echo 'Next, set monitor to the saved `user` mode settings'
