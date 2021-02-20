@@ -138,8 +138,9 @@ augroup vimrcFileSettings
     " tex, bib
     autocmd BufRead,BufNewFile *.tex set filetype=tex
     autocmd FileType tex setlocal textwidth=80
-    autocmd FileType tex,bib map <buffer> <leader>g :!mupdf $HOME/bibdex/files/<cword>.pdf &<cr>
     autocmd FileType tex,bib setlocal iskeyword+=+
+    " subshell with monitor mode so that CTRL-z does not suspend mupdf
+    autocmd FileType tex,bib map <buffer> <leader>g :!(set -m; exec mupdf $HOME/bibdex/files/<cword>.pdf &)<cr>
     autocmd FileType tex setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
     autocmd FileType bib setlocal tabstop=1 softtabstop=1 shiftwidth=1 expandtab
 augroup END
