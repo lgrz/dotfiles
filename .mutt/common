@@ -29,16 +29,84 @@ set ssl_force_tls = yes
 set sort = threads
 set sort_aux = reverse-last-date-received
 
+# default:        "!%a, %b %d, %Y at %I:%M:%S%p %Z"
+# strftime
 set date_format = "!%a, %b %d, %Y at %I:%M:%S%p %Z"
 
-# always include quote in replies
-set include = yes
+#
+# == General options
+#
 
-# don't add user-agent header to outgoing messages
-set user_agent = no
+# FIXME: collapse them here.
+
+#
+# == Index view options
+#
+
+# Index view column format
+#
+# Some unusual format strings:
+#   - The following are expanded by `strftime` and a leading `!` (bang)
+#     disables locales:
+#
+#     * `%{fmt}` - the date and time of the message is converted to sender's time zone
+#     * `%[fmt]` - the local date and time when the message was received
+#     * `%<fmt>` - the current local time
+#
+#   - Optional printing (similar to the ternary operator in some languages) can
+#     be accomplished with the `%?` syntax:
+#
+#       `%?<sequence_char>?<optional_string>?`
+#
+#     For more see `$status_format`.
+#
+# Some that are used below:
+#   - `%y` - X-Label field
+#   - `%Y` - X-Label field
+#
+# date in the default index format is `%{%b %d}` and is an instance of `%{fmt}`
+# and not `%d`:
+#   1. `%{fmt}` goes staight to `strftime`;
+#   2. `%d` will use `$date_format`.
+#
+# default:       "%4C %Z %{%b %d} %-15.15L (%?l?%4l&%4c?) %s"
+set index_format="%4C %Z %{%b %d} %-15.15L (%?l?%4l&%4c?) %?y?[%Y] ?%s"
+
+
+#
+# == Pager options
+#
+
+# show/hide a `+` marker displayed at beginning of wrapped lines
+unset markers
+
+#
+# == Compose view options
+#
+
+# dashes before sig
+# set sig_dashes
+# skip to compose when replying
+set fast_reply
+# include quote in replies
+set include
+# include message in forwards
+set forward_quote
+# format of quoting header
+set attribution = "On %d, %n wrote:"
+# forward attachments as part of body
+unset mime_forward
+# save attachments with the body
+set fcc_attach
+# ask for cc:
+set askcc
+# show headers when composing
+set edit_headers
+# (add/remove) user-agent header to outgoing messages
+set user_agent
 
 # no confirmation when appending messages to another mailbox
-set confirmappend = no
+unset confirmappend
 # no confirmation when deleting messages
 set delete
 # clear new flag after reading a message, not when we've seen it in the list
@@ -54,7 +122,7 @@ unhdr_order *
 hdr_order from subject to cc date
 
 # don't jump to next message
-set pager_stop = yes
+unset pager_stop
 
 # set high read/write progress indicators
 set read_inc = 1000
@@ -69,7 +137,8 @@ set wrap = 80
 
 # wait for user to press key after external commands from certain functions
 # <shell-escape>, etc
-unset wait_key
+# commented out in favor of setting this explicitly in macros
+# unset wait_key
 
 # custom key bindings
 bind index R group-reply
@@ -80,11 +149,6 @@ bind index <space> collapse-thread
 
 bind pager [ half-up
 bind pager ] half-down
-
-# what to show in the index display
-# default format: "%4C %Z %{%b %d} %-15.15L (%?l?%4l&%4c?) %s"
-# show `X-Label` header (a.k.a tags)
-set index_format="%4C %Z %{%b %d} %-15.15L (%?l?%4l&%4c?) %?y?[%Y] ?%s"
 
 # labels
 macro index y "<enter-command>set editor=\"~/bin/editlabel append\"\n\
@@ -100,8 +164,3 @@ macro pager Y "<enter-command>set editor=\"~/bin/editlabel menu\"\n\
     <edit><sync-mailbox><next-undeleted>\
     <enter-command>set editor=vim\n" "Edit labels"
 macro index \Cy "<limit>~y " "Limit view to label"
-
-# change accounts
-macro index <f1> "<change-folder> =lgrz.oov/INBOX<enter>"
-macro index <f2> "<change-folder> =fm/INBOX<enter>"
-
