@@ -74,6 +74,13 @@ nnoremap <c-6> <c-^>
 nnoremap <leader>; :setlocal spell!<cr>
 
 "
+" Disable autoindent on current buffer
+nnoremap <f2> :setlocal noai nocin nosi inde=<cr>
+
+" Toggle paste mode
+set pastetoggle=<f3>
+
+"
 " Toggle invisible characters
 nnoremap <leader>l :set list!<cr>
 " Set custom tabstop and eol symbols
