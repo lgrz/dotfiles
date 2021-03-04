@@ -30,16 +30,18 @@ do
     status
 done &
 
-# FIXME: replace keychain with this
 # eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)
 # export SSH_AUTH_SOCK
 
 output=$(xrandr | awk 'NR > 2 && $2 ~ /^connected/ { print $1 }')
 xrandr --output LVDS-1 --auto --output ${output:-"HDMI-1"} --auto --left-of LVDS-1
+
+xset b off
 # screen lock timeout
 xset s 1800
 # disable dpms (energy features)
-xset dpms 0 0 0
+# [watch out though, that `systemctl suspend` will reset it]
+xset -dpms
 xss-lock slock &
 # xautolock -time 20 -locker slock -detectsleep -notify 60 -notifier "notify-send -t 120 -- 'screen lock (60)'" &
 
