@@ -97,8 +97,10 @@ _completemarks() {
 }
 complete -F _completemarks j unmark
 
-if [ -f "$HOME/.local/anaconda3/etc/profile.d/conda.sh" ]; then
-    . "$HOME/.local/anaconda3/etc/profile.d/conda.sh"
+# we'd rather just source a shell script than call Python to do the same thing;
+# that's what the __conda_setup/eval/init dance seems to do...
+if [ -f "$HOME/.local/miniconda3/etc/profile.d/conda.sh" ]; then
+    . "$HOME/.local/miniconda3/etc/profile.d/conda.sh"
 fi
 
 if [ -d "$HOME/.local/swift/usr/bin" ]; then
