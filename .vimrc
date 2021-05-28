@@ -17,9 +17,14 @@ set cmdheight=2
 set relativenumber
 "set colorcolumn=80
 set mouse=
-" case insensitive search with lowercase, case sensitive otherwise
-set smartcase
-
+" case insensitive search
+"
+" note: I don't like `ignorecase` search because it is also active when doing
+" `%s/foo/bar/` (i.e. search and replace), and that can easily cause issues,
+" parituclary when dealing with a Latex table of results for example.
+"
+" The default is `noignorecase`, but let's be explicit.
+set noignorecase
 " ignore case when completing file names and direcorties
 set wildignorecase
 
